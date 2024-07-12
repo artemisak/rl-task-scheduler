@@ -334,10 +334,6 @@ if __name__ == "__main__":
             for episode_scores in pop_episode_scores
         ]
 
-        # print('approx_kl', avg_approx_kl)
-        # print("pop_episode_scores", pop_episode_scores)
-        # print("total_steps", total_steps)
-
         # Log metrics
         fitnesses_dict = {f"Agent {i} Fitness": fitness for i, fitness in enumerate(fitnesses)}
         scores_dict = {f"Agent {i} Score": score for i, score in enumerate(mean_scores)}
@@ -368,7 +364,7 @@ if __name__ == "__main__":
             agent.steps.append(agent.steps[-1])
 
     # Save the trained algorithm
-    path = "./models/MATD3"
+    path = "./models/MADDPG"
     filename = "MATD3_trained_agent.pt"
     os.makedirs(path, exist_ok=True)
     save_path = os.path.join(path, filename)
