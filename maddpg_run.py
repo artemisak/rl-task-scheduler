@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     # Define the initial hyperparameters
     INIT_HP = {
-        "POPULATION_SIZE": 2,
+        "POPULATION_SIZE": 4,
         "ALGO": "MADDPG",  # Algorithm
         # Swap image channels dimension from last to first [H, W, C] -> [C, H, W]
         "CHANNELS_LAST": False,
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         # Compute the overall average KL divergence across all agents
         return np.mean(approx_kls)
 
-    num_envs = 2
+    num_envs = 8
 
     # Define some environment as a parallel environment
     env = SurgeryQuotaScheduler(render_mode='ansi')
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     )
 
     # Define training loop parameters
-    max_steps = 10000  # Max steps (default: 2000000)
+    max_steps = 2000000  # Max steps (default: 2000000)
     learning_delay = 0  # Steps before starting learning
     evo_steps = 1000  # Evolution frequency
     eval_steps = None  # Evaluation steps per episode - go until done
