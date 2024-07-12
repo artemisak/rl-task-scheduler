@@ -365,7 +365,7 @@ if __name__ == "__main__":
 
     # Save the trained algorithm
     path = "./models/MADDPG"
-    filename = "MATD3_trained_agent.pt"
+    filename = "MADDPG_trained_agent.pt"
     os.makedirs(path, exist_ok=True)
     save_path = os.path.join(path, filename)
     elite.save_checkpoint(save_path)
