@@ -25,25 +25,25 @@ if __name__ == "__main__":
     }
 
     # Define the initial hyperparameters
-    # INIT_HP = {
-    #     "POPULATION_SIZE": 4,
-    #     "ALGO": "MADDPG",  # Algorithm
-    #     # Swap image channels dimension from last to first [H, W, C] -> [C, H, W]
-    #     "CHANNELS_LAST": False,
-    #     "BATCH_SIZE": 32,  # Batch size
-    #     "O_U_NOISE": True,  # Ornstein Uhlenbeck action noise
-    #     "EXPL_NOISE": 0.1,  # Action noise scale
-    #     "MEAN_NOISE": 0.0,  # Mean action noise
-    #     "THETA": 0.15,  # Rate of mean reversion in OU noise
-    #     "DT": 0.01,  # Timestep for OU noise
-    #     "LR_ACTOR": 0.001,  # Actor learning rate
-    #     "LR_CRITIC": 0.001,  # Critic learning rate
-    #     "GAMMA": 0.95,  # Discount factor
-    #     "MEMORY_SIZE": 100000,  # Max memory buffer size
-    #     "LEARN_STEP": 100,  # Learning frequency
-    #     "TAU": 0.01,  # For soft update of target parameters
-    #     "POLICY_FREQ": 2,  # Policy frequnecy
-    # }
+    INIT_HP = {
+        "POPULATION_SIZE": 4,
+        "ALGO": "MADDPG",  # Algorithm
+        # Swap image channels dimension from last to first [H, W, C] -> [C, H, W]
+        "CHANNELS_LAST": False,
+        "BATCH_SIZE": 32,  # Batch size
+        "O_U_NOISE": True,  # Ornstein Uhlenbeck action noise
+        "EXPL_NOISE": 0.1,  # Action noise scale
+        "MEAN_NOISE": 0.0,  # Mean action noise
+        "THETA": 0.15,  # Rate of mean reversion in OU noise
+        "DT": 0.01,  # Timestep for OU noise
+        "LR_ACTOR": 0.001,  # Actor learning rate
+        "LR_CRITIC": 0.001,  # Critic learning rate
+        "GAMMA": 0.95,  # Discount factor
+        "MEMORY_SIZE": 100000,  # Max memory buffer size
+        "LEARN_STEP": 100,  # Learning frequency
+        "TAU": 0.01,  # For soft update of target parameters
+        "POLICY_FREQ": 2,  # Policy frequnecy
+    }
 
     def estimate_approx_kl(old_cont_actions, new_cont_actions, epsilon=1e-8):
         # Initialize lists to store KL divergences for each agent
