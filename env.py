@@ -101,17 +101,6 @@ def convert_to_calendar(observations):
             dates[date] += 1
     return dates
 
-# def reward_map(slot_occupancy, position, end_of_episode, k, action, name):
-#     reward = 0
-#     if action == 0:
-#         reward = -(agents_rewards[name] * k - (slot_occupancy[position] - 1) * agents_rewards[name])
-#     elif action == 1:
-#         reward = agents_rewards[name] * k - (slot_occupancy[position] - 2) * agents_rewards[name]
-#     elif action == 2:
-#         reward = (slot_occupancy[position] - 4) * agents_rewards[name]
-#     reward = round(reward, 1)
-#     return -reward if reward != -0.0 else 0.0
-
 def reward_map(slot_occupancy, position, end_of_episode, k, action, name):
     reward = 0
     if action == 0:
