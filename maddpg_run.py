@@ -14,10 +14,7 @@ import torch
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print("===== AgileRL Online Multi-Agent Demo =====")
-
-    np.random.seed(0)
-
+    
     # Define the network configuration
     NET_CONFIG = {
         "arch": "mlp",  # Network architecture
@@ -159,7 +156,7 @@ if __name__ == "__main__":
         mutation_sd=0.1,  # Mutation strength
         agent_ids=INIT_HP["AGENT_IDS"],
         arch=NET_CONFIG["arch"],
-        rand_seed=np.random.seed(0),
+        rand_seed=np.random.seed(None),
         device=device,
     )
 
