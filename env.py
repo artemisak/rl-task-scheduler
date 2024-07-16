@@ -134,11 +134,8 @@ class SurgeryQuotaScheduler(ParallelEnv):
     def action_space(self, agent):
         return Discrete(3)
 
-    def reset(self, seed=None, options=None):
-        self.render()
-      
+    def reset(self, seed=None, options=None):      
         self.np_random = np.random.default_rng(seed if seed is not None else None)
-      
         self.agents = self.possible_agents.copy()
         a = 0
         for agent in self.agents:
