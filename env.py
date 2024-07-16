@@ -123,7 +123,6 @@ class SurgeryQuotaScheduler(ParallelEnv):
         self.agent_name_mapping = dict(
             zip(self.possible_agents, list(range(len(self.possible_agents))))
         )
-        self.np_random = np.random.default_rng()
         self.agents = self.possible_agents.copy()
         self.agent_data = {agent: {} for agent in self.agents}
 
@@ -137,9 +136,9 @@ class SurgeryQuotaScheduler(ParallelEnv):
 
     def reset(self, seed=None, options=None):
         self.render()
-        if seed is not None:
-            self.np_random = np.random.default_rng(seed)
-
+      
+        self.np_random = np.random.default_rng(seed if seed is not None else None)
+      
         self.agents = self.possible_agents.copy()
         a = 0
         for agent in self.agents:
