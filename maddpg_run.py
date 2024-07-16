@@ -290,11 +290,9 @@ if __name__ == "__main__":
                 for idx, (d, t) in enumerate(zip(term_array, trunc_array)):
                     if np.any(d) or np.any(t):
                         completed_episode_scores.append(scores[idx])
-                        # print("completed_episode_scores", completed_episode_scores)
                         agent.scores.append(scores[idx])
                         episode_returns.append(episode_return)
                         episode_count += 1
-
                         scores[idx] = 0
                         episode_return = 0
                         reset_noise_indices.append(idx)
