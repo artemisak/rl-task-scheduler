@@ -38,3 +38,17 @@ Now you will be able to separatly launch `train.py` and `evaluate.py` python scr
 ```
 python3 train.py
 ```
+
+## Settings and considerations
+
+In the bash script you will find some default game environment setting to run the experints:
+- `MAX_CAPACITY` - the maximum throughput capacity of a day in the planning horizon;
+- `MAX_AGENTS` - the maximun number of unique agents, that are currently operating in environment;
+- `MAX_DAYS` - the maximum length of a moving window of a planning horizon;
+- `MAX_EPISODE_LENGTH` - the maximum duration of a unit game episode.
+
+You may change these numbers, especially the maximum throughput capacity. By default it's uniform across the planning horizon, but if you would like to you do may set a custom distribution using `ideal_state` variable inside `sheduler.py` script.
+
+In case you need to run the trained algorithm on a bigger set of agents you could train twelve unique agents related to a twelve unique combinations of their internal state variables. Than assign every new agent policy equal to the one of these twelve trained polices and that would be enough to somewhat generalize algorithm to operate on an arbitrary set of agents. Note, it's hard to tell if this good enough for your case or not.
+
+In case you need to apapt your agents to operate with a moving planning horizon you probably would like to set a bigger value `num_envs` in a `train.py` script and initialize each game environment with a different `ideal_state` parameter in `sheduler.py` script. This will help agent to generalize their behavior to a different circumstances and mitigate overfitting to a fixed environment. Note, that this will probably cost you a lot of time as the training process will go slowly.
