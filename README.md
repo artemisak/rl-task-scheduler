@@ -2,36 +2,7 @@
 
 This project implements a multi-agent reinforcement learning system for optimizing surgery scheduling in a hospital environment. It uses the Multi-Agent Deep Deterministic Policy Gradient (MADDPG) algorithm to train agents to make efficient scheduling decisions.
 
-## Results and visualization
-
-Here are the tensorboard log charts of MADDPG training process (scaled for Alpha=2, 1.9 and 1.5):
-
-<p align="center">
-  <img src="assets/Avarage Fitnesses-4.svg" alt="fitness-1" width="200"/>
-  <img src="assets/Average Approx KL-7.svg" alt="kl-1" width="200"/>
-  <img src="assets/Average Scores-6.svg" alt="scores-1" width="200"/>
-  <img src="assets/Cumulative Reward-6.svg" alt="scores-1" width="200"/>
-</p>
-
-Here are the tensorboard log charts of MADDPG training process (scaled for Alpha=2, 1.9, 1.5 and 1):
-
-<p align="center">
-  <img src="assets/Avarage Fitnesses-3.svg" alt="fitness-1" width="200"/>
-  <img src="assets/Average Approx KL-6.svg" alt="kl-1" width="200"/>
-  <img src="assets/Average Scores-5.svg" alt="scores-1" width="200"/>
-  <img src="assets/Cumulative Reward-5.svg" alt="scores-1" width="200"/>
-</p>
-
-Histograms of average distribution from ideal distribution are presented below:
-
-<p align="center">
-  <img src="assets/distribution_chart2.svg" alt="dist-1" width="200"/>
-  <img src="assets/distribution_chart19.svg" alt="kl-1" width="200"/>
-  <img src="assets/distribution_chart15.svg" alt="scores-1" width="200"/>
-  <img src="assets/distribution_chart1.svg" alt="scores-1" width="200"/>
-</p>
-
-# Installation and run
+## Installation and run
 There is a fast way to install all dependencies and run the experiment using bash script `run.sh`. First you need to open a project folder in the Visual Studio Code and call the terminal. Write this line in a bash console:
 
 ```
@@ -68,7 +39,36 @@ Now you will be able to separatly launch `train.py` and `evaluate.py` python scr
 python3 train.py
 ```
 
-## Settings and considerations
+## Results and visualization
+
+Here are the tensorboard log charts of MADDPG training process (scaled for Alpha=2, 1.9 and 1.5):
+
+<p align="center">
+  <img src="assets/Avarage Fitnesses-4.svg" alt="fitness-1" width="200"/>
+  <img src="assets/Average Approx KL-7.svg" alt="kl-1" width="200"/>
+  <img src="assets/Average Scores-6.svg" alt="scores-1" width="200"/>
+  <img src="assets/Cumulative Reward-6.svg" alt="scores-1" width="200"/>
+</p>
+
+Here are the tensorboard log charts of MADDPG training process (scaled for Alpha=2, 1.9, 1.5 and 1):
+
+<p align="center">
+  <img src="assets/Avarage Fitnesses-3.svg" alt="fitness-1" width="200"/>
+  <img src="assets/Average Approx KL-6.svg" alt="kl-1" width="200"/>
+  <img src="assets/Average Scores-5.svg" alt="scores-1" width="200"/>
+  <img src="assets/Cumulative Reward-5.svg" alt="scores-1" width="200"/>
+</p>
+
+Histograms of average distribution from ideal distribution are presented below:
+
+<p align="center">
+  <img src="assets/distribution_chart2.svg" alt="dist-1" width="200"/>
+  <img src="assets/distribution_chart19.svg" alt="kl-1" width="200"/>
+  <img src="assets/distribution_chart15.svg" alt="scores-1" width="200"/>
+  <img src="assets/distribution_chart1.svg" alt="scores-1" width="200"/>
+</p>
+
+## Additional settings and considerations
 
 In the bash script you will find some default game environment setting to run the experints:
 - `MAX_CAPACITY` - the maximum throughput capacity of a day in the planning horizon;
