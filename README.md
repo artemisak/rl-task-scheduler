@@ -52,3 +52,32 @@ You may change these numbers, especially the maximum throughput capacity. By def
 In case you need to run the trained algorithm on a bigger set of agents you could train twelve unique agents related to a twelve unique combinations of their internal state variables. Than assign every new agent policy equal to the one of these twelve trained polices and that would be enough to somewhat generalize algorithm to operate on an arbitrary set of agents. Note, it's hard to tell if this good enough for your case or not.
 
 In case you need to apapt your agents to operate with a moving planning horizon you probably would like to set a bigger value `num_envs` in a `train.py` script and initialize each game environment with a different `ideal_state` parameter in `sheduler.py` script. This will help agent to generalize their behavior to a different circumstances and mitigate overfitting to a fixed environment. Note, that this will probably cost you a lot of time as the training process will go slowly.
+
+## Results
+
+Here are the tensorboard log charts of MADDPG training process (scaled for Alpha=2, 1.9 and 1.5):
+
+<p align="center">
+  <img src="assets/Avarage Fitnesses-4.svg" alt="fitness-1" width="200"/>
+  <img src="assets/Average Approx KL-7.svg" alt="kl-1" width="200"/>
+  <img src="assets/Average Scores-6.svg" alt="scores-1" width="200"/>
+  <img src="assets/Cumulative Reward-6.svg" alt="scores-1" width="200"/>
+</p>
+
+Here are the tensorboard log charts of MADDPG training process (scaled for Alpha=2, 1.9, 1.5 and 1):
+
+<p align="center">
+  <img src="assets/Avarage Fitnesses-3.svg" alt="fitness-1" width="200"/>
+  <img src="assets/Average Approx KL-6.svg" alt="kl-1" width="200"/>
+  <img src="assets/Average Scores-5.svg" alt="scores-1" width="200"/>
+  <img src="assets/Cumulative Reward-5.svg" alt="scores-1" width="200"/>
+</p>
+
+Histograms of average distribution from ideal distribution are presented below:
+
+<p align="center">
+  <img src="assets/distribution_chart2.svg" alt="dist-1" width="200"/>
+  <img src="assets/distribution_chart19.svg" alt="kl-1" width="200"/>
+  <img src="assets/distribution_chart15.svg" alt="scores-1" width="200"/>
+  <img src="assets/distribution_chart1.svg" alt="scores-1" width="200"/>
+</p>
