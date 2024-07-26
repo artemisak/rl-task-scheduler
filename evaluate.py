@@ -7,7 +7,7 @@ import torch
 from agilerl.algorithms.maddpg import MADDPG
 from agilerl.algorithms.matd3 import MATD3
 from scheduler import SurgeryQuotaScheduler
-from tqdm import trange
+from tqdm import tqdm
 
 
 def parse_args():
@@ -104,8 +104,7 @@ if __name__ == "__main__":
 
     # Test loop for inference
     print("Evaluation...")
-    pbar = trange(episodes, unit="episode")
-    for ep in range(episodes):
+    for ep in tqdm(range(episodes)):
         state, info = env.reset()
         agent_reward = {agent_id: 0 for agent_id in agent_ids}
         score = 0
@@ -158,8 +157,5 @@ if __name__ == "__main__":
         for agent_id in agent_ids:
             indi_agent_rewards[agent_id].append(agent_reward[agent_id])
 
-        pbar.update(1)  # Update progress bar for each episode
-
     calculate_deviation(last_episodes)
-    pbar.close()
     env.close()
