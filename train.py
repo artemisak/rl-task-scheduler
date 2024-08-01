@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument("--max_days", type=int, default=7, help='planning horizon')
     parser.add_argument("--max_episode_length", type=int, default=7, help='max number of game turns')
     parser.add_argument("--algorithm", type=str, default="MADDPG", help="agilerl algorithm")
-    parser.add_argument("--timestamp", type=str, default=f"{datetime.now()}", help='timestamp for process tracking')
+    parser.add_argument("--timestamp", type=str, default=datetime.now().strftime("%Y%m%d_%H%M%S"), help='timestamp for process tracking')
     args = parser.parse_args()
     return args
 
@@ -35,28 +35,26 @@ if __name__ == "__main__":
     # Define the network configuration
     NET_CONFIG = {
         "arch": "mlp",  # Network architecture
-        "hidden_size": [64, 64],  # Actor hidden size
+        "hidden_size": [128, 128],  # Actor hidden size
     }
 
     # Define the initial hyperparameters
     INIT_HP = {
-        "POPULATION_SIZE": 6,
+        "POPULATION_SIZE": 4,
         "ALGO": args.algorithm,  # Algorithm
-        # Swap image channels dimension from last to first [H, W, C] -> [C, H, W]
         "CHANNELS_LAST": False,
-        "BATCH_SIZE": 256,  # Batch size
+        "BATCH_SIZE": 32,  # Batch size
         "O_U_NOISE": True,  # Ornstein Uhlenbeck action noise
         "EXPL_NOISE": 0.1,  # Action noise scale
         "MEAN_NOISE": 0.0,  # Mean action noise
         "THETA": 0.15,  # Rate of mean reversion in OU noise
         "DT": 0.01,  # Timestep for OU noise
-        "LR_ACTOR": 0.01,  # Actor learning rate
+        "LR_ACTOR": 0.001,  # Actor learning rate
         "LR_CRITIC": 0.01,  # Critic learning rate
         "GAMMA": 0.95,  # Discount factor
-        "MEMORY_SIZE": 100000,  # Max memory buffer size
-        "LEARN_STEP": 100,  # Learning frequency
+        "MEMORY_SIZE": 100_000,  # Max memory buffer size
+        "LEARN_STEP": 5,  # Learning frequency
         "TAU": 0.01,  # For soft update of target parameters
-        "POLICY_FREQ": 2,  # Policy frequnecy
     }
 
     def estimate_approx_kl(old_cont_actions, new_cont_actions, epsilon=1e-8):
@@ -91,7 +89,7 @@ if __name__ == "__main__":
       # Compute the overall average KL divergence across all agents
       return np.mean(approx_kls)
 
-    num_envs = 12
+    num_envs = 8
 
     # Define some environment as a parallel environment
     env = SurgeryQuotaScheduler(render_mode="terminal", max_capacity=args.max_capacity,
@@ -180,9 +178,9 @@ if __name__ == "__main__":
     )
 
     # Define training loop parameters
-    max_steps = 100000  # Max steps
+    max_steps = 13_000  # Max steps
     learning_delay = 0  # Steps before starting learning
-    evo_steps = 500  # Evolution frequency
+    evo_steps = 1000  # Evolution frequency
     eval_steps = None  # Evaluation steps per episode - go until done
     eval_loop = 1  # Number of evaluation episodes
     elite = pop[0]  # Assign a placeholder "elite" agent

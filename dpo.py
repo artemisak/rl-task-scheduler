@@ -28,7 +28,6 @@ if __name__ == '__main__':
                        'base_reward': 1.0,
                        'window': rng.choice([3, 5, 7], size=1).item(),
                        'alpha': rng.choice([2.0, 1.9, 1.8], size=1).item(),
-                       'alpha_decay': 0.0,
                        'urgency': rng.integers(1, 4, 1).item(),
                        'completeness': rng.integers(0, 2, 1).item(),
                        'complexity': rng.integers(0, 2, 1).item(),

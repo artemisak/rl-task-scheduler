@@ -53,7 +53,7 @@ class SurgeryQuotaScheduler(ParallelEnv):
                 pygame.display.flip()
             pygame.quit()            
         elif self.render_mode == 'terminal':
-            calendar = self.occupancy({agent: self.agents_data[agent]['position'] for agent in self.agents})
+            calendar = self.occupancy
             return calendar
         else:
             gymnasium.logger.warn('You are calling render mode without specifying any render mode.')
@@ -71,10 +71,9 @@ class SurgeryQuotaScheduler(ParallelEnv):
                                                                                        'base_reward': 1.0,
                                                                                        'window': 3,
                                                                                        'alpha': 2.0,
-                                                                                       'alpha_decay': 0.0,
-                                                                                       'urgency': self.rng.integers(1, 4, 1).item(),
-                                                                                       'completeness': self.rng.integers(0, 2, 1).item(),
-                                                                                       'complexity': self.rng.integers(0, 2, 1).item(),
+                                                                                       'urgency': 1,
+                                                                                       'completeness': 1,
+                                                                                       'complexity': 1,
                                                                                        'position': self.rng.integers(0, self.max_days, 1).item(),
                                                                                        'mutation_rate': 0.0} for agent in self.agents}
         for agent in self.agents:
@@ -100,8 +99,7 @@ class SurgeryQuotaScheduler(ParallelEnv):
         self.num_moves += 1
         for agent in self.agents:
             if self.agents_data[agent]['active']:
-                new_position = self.agents_data[agent]['position'] + self.agent_action_mapping[int(actions[agent])]
-                self.agents_data[agent]['position'] = max(0, min(new_position, self.max_days - 1))
+                self.agents_data[agent]['position'] = (self.agents_data[agent]['position'] + self.agent_action_mapping[int(actions[agent])]) % self.max_days
                 if self.agents_data[agent]['position'] >= self.max_days:
                     self.agents_data[agent]['position'] = self.max_days - 1
                 if self.agents_data[agent]['position'] < 0:
@@ -113,9 +111,11 @@ class SurgeryQuotaScheduler(ParallelEnv):
                     elif int(actions[agent]) == 1:
                         if self.agents_data[agent]['mutation_rate'] != 0.0:
                             self.agents_data[agent]['mutation_rate'] = max(self.agents_data[agent]['mutation_rate'] - 0.05, 0.0)
+        rewards = {agent: -0.1 for agent in self.agents}
         terminations = {agent: self.num_moves >= self.max_episode_length for agent in self.agents}
         truncations = {agent: False for agent in self.agents}
-        rewards = {agent: self.reward_map(agent, self.occupancy) for agent in self.agents}
+        if any(terminations.values()) or any(truncations.values()):
+            rewards = {agent: self.reward_map(agent) for agent in self.agents}
         observations = {agent: np.array([self.agents_data[agent]['urgency'],
                                          self.agents_data[agent]['completeness'],
                                          self.agents_data[agent]['complexity'],
@@ -132,8 +132,8 @@ class SurgeryQuotaScheduler(ParallelEnv):
                            for agent in self.agents}.values()).count(day)
                            for day in range(self.max_days)}
     
-    def reward_map(self, agent, occupancy):
-        discrepancy = {day: abs(occupancy[day] - self.target_state[day]) for day in self.target_state}
+    def reward_map(self, agent):
+        discrepancy = {day: abs(self.occupancy[day] - self.target_state[day]) for day in self.target_state}
         window = [self.agents_data[agent]['position'] + np.ceil(d - self.agents_data[agent]['window'] / 2) for d in range(self.agents_data[agent]['window'])]
         masked_discrepancy = {day: discrepancy[day] if day in window else 0 for day in discrepancy}
         rv = levy_stable(self.agents_data[agent]['alpha'], 0.0, loc=self.agents_data[agent]['position'], scale=1.0)

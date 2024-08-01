@@ -5,7 +5,6 @@ import numpy as np
 import torch
 
 from agilerl.algorithms.maddpg import MADDPG
-from agilerl.algorithms.matd3 import MATD3
 from scheduler import SurgeryQuotaScheduler
 from tqdm import tqdm
 
@@ -17,7 +16,7 @@ def parse_args():
     parser.add_argument("--max_days", type=int, default=7, help='planning horizon')
     parser.add_argument("--max_episode_length", type=int, default=7, help='max number of game turns')
     parser.add_argument("--algorithm", type=str, default="MADDPG", help="agilerl algorithm")
-    parser.add_argument("--timestamp", type=str, default=f"{datetime.now()}", help='timestamp for process tracking')
+    parser.add_argument("--timestamp", type=str, default=datetime.now().strftime("%Y%m%d_%H%M%S"), help='timestamp for process tracking')
     args = parser.parse_args()
     return args
 
@@ -85,12 +84,9 @@ if __name__ == "__main__":
 
     # Load the saved agent
     # path = f"./models/{args.algorithm}_{args.timestamp}/trained_agent.pt"
-    path = f"./models/MADDPG_20240720_080859/trained_agent.pt"
+    path = './models/MADDPG_20240801_000601/trained_agent.pt'
 
-    if args.algorithm == "MADDPG":
-        model = MADDPG.load(path, device)
-    else:
-        model = MATD3.load(path, device)
+    model = MADDPG.load(path, device)
 
     # Define test loop parameters
     episodes = 1000  # Number of episodes to test agent on
