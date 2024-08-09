@@ -41,7 +41,7 @@ if __name__ == '__main__':
                                     device=device)
     
     step = 0
-    max_steps = 10_000
+    max_steps = 1_000
     learning_delay = 0
     evo_steps = 100
     
