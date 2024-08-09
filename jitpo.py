@@ -45,7 +45,7 @@ if __name__ == '__main__':
     learning_delay = 0
     evo_steps = 100
     
-    with tqdm(total=max_steps, desc='Direct policy optimization (DPO) concept proof simulation progress') as pbar:
+    with tqdm(total=max_steps, desc='Just in Time Preference Optimization (JITPO) concept proof simulation progress') as pbar:
 
         while step < max_steps:
 
@@ -86,5 +86,5 @@ if __name__ == '__main__':
                 model.reset_action_noise(reset_noise_indices)
     
     os.makedirs('./models/MADDPG_20240720_080859', exist_ok=True)
-    model.save_checkpoint('./models/MADDPG_20240720_080859/trained_agent_dpo.pt')
+    model.save_checkpoint('./models/MADDPG_20240720_080859/trained_agent_jitpo.pt')
     env.close()
