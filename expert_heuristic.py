@@ -1,6 +1,6 @@
-
 import itertools
 import numpy as np
+
 
 class Client:
     def __init__(self, name, urgency, completeness, complexity):
@@ -12,6 +12,7 @@ class Client:
     @property
     def scaling_factor(self):
         return int(round((self.complexity + (1 - self.completeness)) * self.urgency))
+
 
 class Manager:
     def __init__(self, planning_horizon, preferences):
@@ -31,6 +32,7 @@ class Manager:
                     self.schedule[day].append(request)
                     break
         return self.schedule
+
 
 class Estimator:
     def __init__(self, schedules, target_state=None):
@@ -82,11 +84,12 @@ class Estimator:
         print(f"Percentage deviation: mean = {mean_deviation:.2%}, std = {std_deviation: .2%}")
         print(f"Average position per scaling factor: {avg_position_per_scaling_factor}")
 
+
 def run_simulation(n_episodes=1):
     planning_horizon = 7
     health_state = list(itertools.product(range(1, 4),
-                                     range(0, 2),
-                                     range(0, 2)))
+                                          range(0, 2),
+                                          range(0, 2)))
 
     target_state = {
         0: {'min': 3, 'max': 3},
@@ -99,7 +102,7 @@ def run_simulation(n_episodes=1):
     }
 
     manager = Manager(planning_horizon, preferences=target_state)
-    
+
     schedules = []
 
     for _ in range(n_episodes):
@@ -110,6 +113,7 @@ def run_simulation(n_episodes=1):
 
     estimator = Estimator(schedules, target_state)
     estimator.describe()
+
 
 if __name__ == "__main__":
     run_simulation()

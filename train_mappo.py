@@ -20,7 +20,7 @@ class Actor(nn.Module):
             nn.Linear(64, action_dim),
             nn.Softmax(dim=-1)
         )
-    
+
     def forward(self, obs):
         return self.network(obs)
 
@@ -35,7 +35,7 @@ class Critic(nn.Module):
             nn.ReLU(),
             nn.Linear(64, 1)
         )
-    
+
     def forward(self, obs):
         return self.network(obs)
 
@@ -48,14 +48,14 @@ class MAPPOAgent:
         self.optimizer_critic = optim.Adam(self.critic.parameters(), lr=lr_critic)
         self.gamma = gamma
         self.epsilon = epsilon
-    
+
     def get_action(self, obs):
         obs = torch.FloatTensor(obs)
         probs = self.actor(obs)
         dist = Categorical(probs)
         action = dist.sample()
         return action.item(), dist.log_prob(action)
-    
+
     def update(self, obs, actions, old_log_probs, rewards, next_obs, dones):
         obs = torch.FloatTensor(obs)
         actions = torch.LongTensor(actions)
@@ -63,18 +63,18 @@ class MAPPOAgent:
         rewards = torch.FloatTensor(rewards)
         next_obs = torch.FloatTensor(next_obs)
         dones = torch.FloatTensor(dones)
-        
+
         values = self.critic(obs).squeeze()
         next_values = self.critic(next_obs).squeeze()
         td_target = rewards + self.gamma * next_values * (1 - dones)
         td_error = td_target - values
         advantage = td_error.detach()
-        
+
         critic_loss = (td_error ** 2).mean()
         self.optimizer_critic.zero_grad()
         critic_loss.backward()
         self.optimizer_critic.step()
-        
+
         probs = self.actor(obs)
         dist = Categorical(probs)
         new_log_probs = dist.log_prob(actions)
@@ -85,7 +85,7 @@ class MAPPOAgent:
         self.optimizer_actor.zero_grad()
         actor_loss.backward()
         self.optimizer_actor.step()
-        
+
         return critic_loss.item(), actor_loss.item()
 
 
@@ -95,7 +95,7 @@ class MAPPOTrainer:
         self.n_agents = n_agents
         self.agents = [MAPPOAgent(obs_dim, action_dim, lr_actor, lr_critic, gamma, epsilon) for _ in range(n_agents)]
         self.writer = SummaryWriter()
-    
+
     def train(self, n_episodes, max_steps, log_interval=5):
         pbar = tqdm(total=n_episodes, desc="Training Progress")
         for episode in range(n_episodes):
@@ -103,21 +103,22 @@ class MAPPOTrainer:
             episode_rewards = [0 for _ in range(self.n_agents)]
             episode_critic_losses = []
             episode_actor_losses = []
-            
+
             for step in range(max_steps):
                 actions = []
                 old_log_probs = []
-                
+
                 for i, agent in enumerate(self.agents):
                     action, log_prob = agent.get_action(obs[f"agent_{i}"])
                     actions.append(action)
                     old_log_probs.append(log_prob)
-                
-                next_obs, rewards, dones, truncations, _ = self.env.step({f"agent_{i}": a for i, a in enumerate(actions)})
-                
+
+                next_obs, rewards, dones, truncations, _ = self.env.step(
+                    {f"agent_{i}": a for i, a in enumerate(actions)})
+
                 for i in range(self.n_agents):
                     episode_rewards[i] += rewards[f"agent_{i}"]
-                
+
                 for i, agent in enumerate(self.agents):
                     critic_loss, actor_loss = agent.update(
                         obs[f"agent_{i}"].reshape(1, -1),
@@ -129,12 +130,12 @@ class MAPPOTrainer:
                     )
                     episode_critic_losses.append(critic_loss)
                     episode_actor_losses.append(actor_loss)
-                
+
                 obs = next_obs
-                
+
                 if all(dones.values()) or all(truncations.values()):
                     break
-            
+
             if (episode + 1) % log_interval == 0:
                 avg_reward = sum(episode_rewards) / self.n_agents
                 avg_critic_loss = np.mean(episode_critic_losses)
@@ -142,12 +143,12 @@ class MAPPOTrainer:
                 self.writer.add_scalar('Reward/average', avg_reward, episode)
                 self.writer.add_scalar('Loss/critic', avg_critic_loss, episode)
                 self.writer.add_scalar('Loss/actor', avg_actor_loss, episode)
-            
+
             pbar.update(1)
             pbar.set_postfix({'avg_reward': f'{sum(episode_rewards) / self.n_agents:.2f}'})
-        
+
         pbar.close()
-    
+
     def save_model(self, path):
         if not os.path.exists(path):
             os.makedirs(path)
@@ -161,7 +162,7 @@ if __name__ == "__main__":
     n_agents = 12
     obs_dim = env.observation_space("agent_0").shape[0]
     action_dim = env.action_space("agent_0").n
-    
+
     trainer = MAPPOTrainer(env, n_agents, obs_dim, action_dim)
     trainer.train(n_episodes=12000, max_steps=7, log_interval=10)
     trainer.save_model('trained_model')

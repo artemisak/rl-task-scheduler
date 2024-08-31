@@ -18,7 +18,7 @@ class Actor(nn.Module):
             nn.Linear(64, action_dim),
             nn.Softmax(dim=-1)
         )
-    
+
     def forward(self, obs):
         return self.network(obs)
 
@@ -26,11 +26,11 @@ class Actor(nn.Module):
 class MAPPOAgent:
     def __init__(self, obs_dim, action_dim):
         self.actor = Actor(obs_dim, action_dim)
-    
+
     def load_model(self, path):
         self.actor.load_state_dict(torch.load(path, weights_only=True))
         self.actor.eval()
-    
+
     def get_action(self, obs):
         obs = torch.FloatTensor(obs)
         with torch.no_grad():
@@ -77,19 +77,19 @@ class Client:
 
     def give_feedback(self):
         answer = np.random.choice([True, False], p=[self.acceptance_rate, 1 - self.acceptance_rate])
-        if answer == True: 
+        if answer == True:
             self.acceptance_rate = 1.0
         return answer
-    
+
 
 class MultiAgentSystemOperator:
     def __init__(self, list_of_clients) -> None:
         self.clients = list_of_clients
-    
+
     def collect_feedback(self):
         for client in self.clients:
             client.satisfied = client.give_feedback()
-    
+
     def assign_agnets(self, agents):
         for client in self.clients:
             health_state = (client.urgency, client.completeness, client.complexity)
@@ -98,7 +98,7 @@ class MultiAgentSystemOperator:
     def get_actions(self, observaions):
         actions = {}
         for agent, client in zip(observations, self.clients):
-            model = client.assigned_agent['model_file']      
+            model = client.assigned_agent['model_file']
             actions[agent] = model.get_action(observaions[agent])
         return actions
 
@@ -113,7 +113,6 @@ if __name__ == '__main__':
                         ])
     logger = logging.getLogger()
 
-
     urgency = range(1, 4)
     completeness = range(0, 2)
     complexity = range(0, 2)
@@ -121,11 +120,11 @@ if __name__ == '__main__':
     options = list(itertools.product(urgency, completeness, complexity))
 
     selected_states = np.random.choice(len(options), size=12, replace=False)
-    health_states  = [options[i] for i in selected_states]
+    health_states = [options[i] for i in selected_states]
 
     patiens = [Client(name=f'client_{i}',
                       urgency=np.random.randint(1, 4),
-                      completeness=np.random.randint(0, 2), 
+                      completeness=np.random.randint(0, 2),
                       complexity=np.random.randint(0, 2)) for i in range(100)]
 
     agents = {f'agent_{i}': MAPPOAgent(obs_dim=11, action_dim=3) for i in range(len(health_states))}
@@ -134,7 +133,9 @@ if __name__ == '__main__':
         agents[agent].load_model(f'trained_model/actor_{i}.pth')
 
     manager = MultiAgentSystemOperator(list_of_clients=patiens)
-    manager.assign_agnets({health_state: {'agent_name': agent_name, 'model_file': model_file} for health_state, (agent_name, model_file) in zip(health_states, agents.items())})
+    manager.assign_agnets(
+        {health_state: {'agent_name': agent_name, 'model_file': model_file} for health_state, (agent_name, model_file)
+         in zip(health_states, agents.items())})
 
     e = 0
 
@@ -147,14 +148,15 @@ if __name__ == '__main__':
         observations, _ = env.reset(
             options={
                 'target_state': {0: {'min': 3, 'max': 3},
-                                1: {'min': 2, 'max': 2},
-                                2: {'min': 2, 'max': 2},
-                                3: {'min': 2, 'max': 2},
-                                4: {'min': 1, 'max': 1},
-                                5: {'min': 1, 'max': 1},
-                                6: {'min': 1, 'max': 1}},
+                                 1: {'min': 2, 'max': 2},
+                                 2: {'min': 2, 'max': 2},
+                                 3: {'min': 2, 'max': 2},
+                                 4: {'min': 1, 'max': 1},
+                                 5: {'min': 1, 'max': 1},
+                                 6: {'min': 1, 'max': 1}},
                 'agents_data': {f'agent_{i}': {'active': ~client.satisfied,
-                                               'position': client.appointment_day if client.satisfied else np.random.randint(0, 7),
+                                               'position': client.appointment_day if client.satisfied else np.random.randint(
+                                                   0, 7),
                                                'base_reward': 1.0,
                                                'window': 5,
                                                'alpha': 2.0,
@@ -175,7 +177,7 @@ if __name__ == '__main__':
             observations, _, dones, truncations, _ = env.step(actions)
 
             for agent, client in zip(observations, manager.clients):
-                 client.appointment_day = observations[agent][3]
+                client.appointment_day = observations[agent][3]
 
             logger.info(f"Episode {e} - {env.render()}")
 

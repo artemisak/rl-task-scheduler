@@ -18,7 +18,7 @@ class Actor(nn.Module):
             nn.Linear(64, action_dim),
             nn.Softmax(dim=-1)
         )
-    
+
     def forward(self, obs):
         return self.network(obs)
 
@@ -26,11 +26,11 @@ class Actor(nn.Module):
 class MAPPOAgent:
     def __init__(self, obs_dim, action_dim):
         self.actor = Actor(obs_dim, action_dim)
-    
+
     def load_model(self, path):
         self.actor.load_state_dict(torch.load(path))
         self.actor.eval()
-    
+
     def get_action(self, obs):
         obs = torch.FloatTensor(obs)
         with torch.no_grad():
@@ -56,8 +56,9 @@ class MAPPOTester:
         bootstrap_average_percentage_deviations = {i: 0 for i in range(7)}
         mean_target_state = {day: (target_state[day]['max'] + target_state[day]['min']) / 2 for day in target_state}
         for key, value in bootstrap_average_distribution.items():
-            bootstrap_average_percentage_deviations[key] = np.abs(mean_target_state[key] - value) / mean_target_state[key]
-        
+            bootstrap_average_percentage_deviations[key] = np.abs(mean_target_state[key] - value) / mean_target_state[
+                key]
+
         average_bootstrap_deviation = np.mean(list(bootstrap_average_percentage_deviations.values()))
         std_bootstrap_deviation = np.std(list(bootstrap_average_percentage_deviations.values()))
         return average_bootstrap_deviation, std_bootstrap_deviation
@@ -85,11 +86,13 @@ class MAPPOTester:
                 # print('Desires: ', rewards)
                 # print(f'Environment state on step {step}:', self.env.render())
                 # print('Beliefs: ', next_obs)
-                
+
                 if any(dones.values()) or any(truncations.values()):
                     episode_observed_states.append(self.env.observed_state)
                     all_final_positions.extend([agent_info['position'] for agent_info in info.values()])
-                    all_scaling_factors.extend([max(1, (agent_info['complexity'] + (1 - agent_info['completeness'])) * agent_info['urgency'])  for agent_info in info.values()])
+                    all_scaling_factors.extend(
+                        [max(1, (agent_info['complexity'] + (1 - agent_info['completeness'])) * agent_info['urgency'])
+                         for agent_info in info.values()])
                     # all_scaling_factors.extend([agent_info['scaling_factor'] for agent_info in info.values()])
 
                 obs = next_obs
@@ -119,7 +122,7 @@ class MAPPOTester:
         print(f"Average number of bids per day: {avg_bids}")
         print(f"Percentage deviation: mean = {mean_deviation:.2%}, std = {std_deviation: .2%}")
         print(f"Average position per scaling factor: {avg_positions}")
-    
+
     def load_model(self, path):
         for i, agent in enumerate(self.agents):
             agent.load_model(os.path.join(path, f'actor_{i}.pth'))
@@ -131,7 +134,7 @@ if __name__ == "__main__":
     n_agents = 12
     obs_dim = env.observation_space("agent_0").shape[0]
     action_dim = env.action_space("agent_0").n
-    
+
     tester = MAPPOTester(env, n_agents, obs_dim, action_dim)
     tester.load_model(path='trained_model')
     tester.bootstrap_test(n_episodes=10000, max_steps=7,
