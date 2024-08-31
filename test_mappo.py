@@ -28,7 +28,7 @@ class MAPPOAgent:
         self.actor = Actor(obs_dim, action_dim)
 
     def load_model(self, path):
-        self.actor.load_state_dict(torch.load(path))
+        self.actor.load_state_dict(torch.load(path, weights_only=True))
         self.actor.eval()
 
     def get_action(self, obs):
@@ -68,12 +68,16 @@ class MAPPOTester:
         all_final_positions = []
         all_scaling_factors = []
 
+        rand_e = np.random.random_integers(0, n_episodes+1, size=5)
+
         for e in tqdm(range(n_episodes), desc="Bootstrap testing..."):
             obs, info = self.env.reset(options=self.options)
 
-            # print(f'Episode {e}:')
-            # print(f'Initial environment state', self.env.render())
-            # print('Beliefs: ', obs)
+            if e in rand_e:
+                print(f'Episode {e}:')
+                print(f'Initial environment state', self.env.render())
+                print('Beliefs: ', obs)
+
             episode_observed_states = []
 
             for step in range(max_steps):
@@ -81,11 +85,13 @@ class MAPPOTester:
                 for i, agent in enumerate(self.agents):
                     action = agent.get_action(obs[f"agent_{i}"])
                     actions[f"agent_{i}"] = action
-                # print('Intentions: ', actions)
+                if e in rand_e:
+                    print('Intentions: ', actions)
                 next_obs, rewards, dones, truncations, info = self.env.step(actions)
-                # print('Desires: ', rewards)
-                # print(f'Environment state on step {step}:', self.env.render())
-                # print('Beliefs: ', next_obs)
+                if e in rand_e:
+                    print('Desires: ', rewards)
+                    print(f'Environment state on step {step}:', self.env.render())
+                    print('Beliefs: ', next_obs)
 
                 if any(dones.values()) or any(truncations.values()):
                     episode_observed_states.append(self.env.observed_state)
@@ -93,7 +99,6 @@ class MAPPOTester:
                     all_scaling_factors.extend(
                         [max(1, (agent_info['complexity'] + (1 - agent_info['completeness'])) * agent_info['urgency'])
                          for agent_info in info.values()])
-                    # all_scaling_factors.extend([agent_info['scaling_factor'] for agent_info in info.values()])
 
                 obs = next_obs
 

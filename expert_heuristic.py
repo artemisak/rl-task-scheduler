@@ -11,7 +11,7 @@ class Client:
 
     @property
     def scaling_factor(self):
-        return int(round((self.complexity + (1 - self.completeness)) * self.urgency))
+        return max(1, (self.complexity + (1 - self.completeness)) * self.urgency)
 
 
 class Manager:
@@ -85,7 +85,7 @@ class Estimator:
         print(f"Average position per scaling factor: {avg_position_per_scaling_factor}")
 
 
-def run_simulation(n_episodes=1):
+def run_simulation(n_episodes=10_000):
     planning_horizon = 7
     health_state = list(itertools.product(range(1, 4),
                                           range(0, 2),
