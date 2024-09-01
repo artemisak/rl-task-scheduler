@@ -1,4 +1,5 @@
 import os
+import logging
 import numpy as np
 import torch
 import torch.nn as nn
@@ -74,9 +75,9 @@ class MAPPOTester:
             obs, info = self.env.reset(options=self.options)
 
             if e in rand_e:
-                print(f'Episode {e}:')
-                print(f'Initial environment state', self.env.render())
-                print('Beliefs: ', obs)
+                logger.info(f'Episode {e}')
+                logger.info(f'Initial environment state: {self.env.render()}')
+                logger.info(f'Beliefs: {obs}')
 
             episode_observed_states = []
 
@@ -85,13 +86,16 @@ class MAPPOTester:
                 for i, agent in enumerate(self.agents):
                     action = agent.get_action(obs[f"agent_{i}"])
                     actions[f"agent_{i}"] = action
+
                 if e in rand_e:
-                    print('Intentions: ', actions)
+                    logger.info(f'Intentions: {actions}')
+
                 next_obs, rewards, dones, truncations, info = self.env.step(actions)
+
                 if e in rand_e:
-                    print('Desires: ', rewards)
-                    print(f'Environment state on step {step}:', self.env.render())
-                    print('Beliefs: ', next_obs)
+                    logger.info(f'Desires: {rewards}')
+                    logger.info(f'Environment state on step {step}:', self.env.render())
+                    logger.info(f'Beliefs: {next_obs}')
 
                 if any(dones.values()) or any(truncations.values()):
                     episode_observed_states.append(self.env.observed_state)
@@ -123,18 +127,24 @@ class MAPPOTester:
     def bootstrap_test(self, n_episodes, max_steps, target_state):
         mean_deviation, std_deviation, avg_bids, avg_positions = self.test(n_episodes, max_steps, target_state)
 
-        print(f"Operator preferences: {target_state}")
-        print(f"Average number of bids per day: {avg_bids}")
-        print(f"Percentage deviation: mean = {mean_deviation:.2%}, std = {std_deviation: .2%}")
-        print(f"Average position per scaling factor: {avg_positions}")
+        logger.info(f'Operator preferences: {target_state}')
+        logger.info(f'Average number of bids per day: {avg_bids}')
+        logger.info(f'Percentage deviation: mean = {mean_deviation:.2%}, std = {std_deviation: .2%}')
+        logger.info(f'Average position per scaling factor: {avg_positions}')
 
     def load_model(self, path):
         for i, agent in enumerate(self.agents):
             agent.load_model(os.path.join(path, f'actor_{i}.pth'))
-        print(f"Loaded model from {path}")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        handlers=[
+                            logging.FileHandler("test_mappo.log"),
+                            logging.StreamHandler()
+                        ])
+    logger = logging.getLogger()
     env = SurgeryQuotaScheduler(render_mode='terminal')
     n_agents = 12
     obs_dim = env.observation_space("agent_0").shape[0]
@@ -142,7 +152,7 @@ if __name__ == "__main__":
 
     tester = MAPPOTester(env, n_agents, obs_dim, action_dim)
     tester.load_model(path='trained_model')
-    tester.bootstrap_test(n_episodes=10000, max_steps=7,
+    tester.bootstrap_test(n_episodes=1, max_steps=7,
                           target_state={0: {'min': 3, 'max': 3},
                                         1: {'min': 2, 'max': 2},
                                         2: {'min': 2, 'max': 2},

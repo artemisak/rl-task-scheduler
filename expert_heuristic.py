@@ -1,4 +1,5 @@
 import itertools
+import logging
 import numpy as np
 
 
@@ -79,11 +80,10 @@ class Estimator:
             scaling_factor_positions[sf].append(pos)
         avg_position_per_scaling_factor = {sf: np.mean(positions) for sf, positions in scaling_factor_positions.items()}
 
-        print(f"Operator preferences: {self.target_state}")
-        print(f"Average number of bids per day: {avg_clients_per_day}")
-        print(f"Percentage deviation: mean = {mean_deviation:.2%}, std = {std_deviation: .2%}")
-        print(f"Average position per scaling factor: {avg_position_per_scaling_factor}")
-
+        logger.info(f'Operator preferences: {self.target_state}')
+        logger.info(f'Average number of bids per day: {avg_clients_per_day}')
+        logger.info(f'Percentage deviation: mean = {mean_deviation:.2%}, std = {std_deviation:.2%}')
+        logger.info(f'Average position per scaling factor: {avg_position_per_scaling_factor}')
 
 def run_simulation(n_episodes=10_000):
     planning_horizon = 7
@@ -116,4 +116,11 @@ def run_simulation(n_episodes=10_000):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        handlers=[
+                            logging.FileHandler("expert_heuristic.log"),
+                            logging.StreamHandler()
+                        ])
+    logger = logging.getLogger()
     run_simulation()
