@@ -68,7 +68,7 @@ class MAPPOTester:
         all_final_positions = []
         all_scaling_factors = []
 
-        rand_e = np.random.random_integers(0, n_episodes+1, size=5)
+        rand_e = [np.random.randint(0, n_episodes+1) for _ in range(100)]
 
         for e in tqdm(range(n_episodes), desc="Bootstrap testing..."):
             obs, info = self.env.reset(options=self.options)
