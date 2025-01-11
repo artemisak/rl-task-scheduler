@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
     tester = MAPPOTester(env, n_agents, obs_dim, action_dim)
     tester.load_model(path='trained_model')
-    tester.bootstrap_test(n_episodes=1, max_steps=7,
+    tester.bootstrap_test(n_episodes=10_000, max_steps=7,
                           target_state={0: {'min': 3, 'max': 3},
                                         1: {'min': 2, 'max': 2},
                                         2: {'min': 2, 'max': 2},
